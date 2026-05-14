@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CGPA Predictor</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="main">
+
+    <!-- LEFT SIDE -->
+    <div class="left">
+
+        <div class="info-box">
+            <div class="info">
+
+                <img src="/static/mnit_logo.png" class="logo">
+
+                <h1>CGPA Predictor</h1>
+
+                <p class="subtitle">
+                    A Machine Learning based system to predict student performance
+                </p>
+
+                <div class="details">
+                    <p><strong>Under:</strong> Prof. Gunjan Soni</p>
+                    <p><strong>Institute:</strong> MNIT Jaipur</p>
+                </div>
+
+                <div class="members">
+                    <h3>Team Members</h3>
+                    <ul>
+                        <li>Karthik Mahesh</li>
+                        <li>Soham Pedate</li>
+                        <li>Tushar Napit</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="right">
+
+        <div class="container">
+
+            <div class="header">
+                <h2>Welcome,</h2>
+                <p>We’d like to ask you some questions</p>
+
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+            </div>
+
+            <form id="form">
+
+                <label>CC Usage:</label>
+                <select id="cc">
+                    <option>Every week</option>
+                    <option>Monthly</option>
+                    <option>Only during exams</option>
+                    <option>Never</option>
+                </select>
+
+                <label>Library Usage:</label>
+                <select id="library">
+                    <option>Every week</option>
+                    <option>Monthly</option>
+                    <option>Only during exams</option>
+                    <option>Never</option>
+                </select>
+
+                <label>Best Resource:</label>
+                <div class="res-group">
+
+                    <label class="res-item">
+                        <input type="checkbox" value="Library resources (books, journals)" class="res">
+                        <span>Library</span>
+                    </label>
+
+                    <label class="res-item">
+                        <input type="checkbox" value="Faculty or mentors" class="res">
+                        <span>Faculty</span>
+                    </label>
+
+                    <label class="res-item">
+                        <input type="checkbox" value="Tutoring/Academic support services" class="res">
+                        <span>Tutoring</span>
+                    </label>
+
+                    <label class="res-item">
+                        <input type="checkbox" value="Seniors" class="res">
+                        <span>Seniors</span>
+                    </label>
+
+                </div>
+
+                <label>Advising:</label>
+                <select id="advising">
+                    <option>1</option><option>2</option><option>3</option>
+                    <option>4</option><option>5</option>
+                </select>
+
+                <label>Study Hours:</label>
+                <select id="study">
+                    <option>0-5</option>
+                    <option>5-10</option>
+                    <option>10-15</option>
+                    <option>15-20</option>
+                    <option>20+</option>
+                </select>
+
+                <label>Attendance:</label>
+                <select id="attendance">
+                    <option>50-75%</option>
+                    <option>75-90%</option>
+                    <option>90-99%</option>
+                    <option>Never miss classes</option>
+                </select>
+
+                <label>Backlogs:</label>
+                <select id="backlogs">
+                    <option>Yes</option>
+                    <option>No</option>
+                </select>
+
+                <button type="submit">Predict</button>
+
+            </form>
+
+            <h3 id="result"></h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+document.getElementById("form").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const selected = document.querySelectorAll(".res:checked");
+    let resources = [];
+    selected.forEach(el => resources.push(el.value));
+
+    const resourceString = resources.join(", ");
+
+    const data = {
+        cc: document.getElementById("cc").value,
+        library: document.getElementById("library").value,
+        resource: resourceString,
+        advising: document.getElementById("advising").value,
+        study: document.getElementById("study").value,
+        attendance: document.getElementById("attendance").value,
+        backlogs: document.getElementById("backlogs").value
+    };
+
+    const res = await fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    document.getElementById("result").innerText =
+        result.error ? result.error : "Predicted CGPA: " + result.prediction;
+});
+</script>
+
+</body>
+</html>
